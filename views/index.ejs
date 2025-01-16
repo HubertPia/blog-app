@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles/main.css" />
+    <title>Mój Blog</title>
+  </head>
+  <body>
+    <header>
+      <h1>Witaj, <%= name %>!</h1>
+      <p>Podziel się swoimi przemyśleniami i historiami</p>
+    </header>
+
+    <main>
+      <div class="post-preview">
+        <button id="openCreateModal">+</button>
+      </div>
+      <div id="postsContainer"></div>
+
+      <!-- add -->
+      <div id="modalOverlayCreate" class="modal-overlay"></div>
+      <div id="createPostModal" class="modal">
+        <div class="modal-content">
+          <span class="close" id="closeCreateModal">&times;</span>
+          <h2>Dodaj nowy post</h2>
+          <input type="text" id="createPostTitle" placeholder="Tytuł" />
+          <textarea id="createPostContent" placeholder="Treść..."></textarea>
+          <button id="saveCreatePost">Zapisz</button>
+        </div>
+      </div>
+
+      <!-- edit -->
+      <div id="modalOverlayEdit" class="modal-overlay"></div>
+      <div id="editPostModal" class="modal">
+        <div class="modal-content">
+          <span class="close" id="closeEditModal">&times;</span>
+          <h2>Edytuj post</h2>
+          <input type="text" id="editPostTitle" placeholder="Tytuł" />
+          <textarea id="editPostContent" placeholder="Treść..."></textarea>
+          <button id="saveEditPost">Zapisz zmiany</button>
+        </div>
+      </div>
+    </main>
+
+    <script src="/scripts/script.js"></script>
+  </body>
+</html>
