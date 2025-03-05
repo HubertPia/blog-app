@@ -31,7 +31,7 @@ app.set("view engine", "ejs");
 
 // Strona logowania
 app.get("/", (req, res) => {
-  res.render("login.ejs");
+  res.render("login.ejs", { error: null });
 });
 
 // Obsługa logowania użytkownika
@@ -39,7 +39,7 @@ app.post("/login", async (req, res) => {
   const { login, password } = req.body;
 
   if (!login || !password) {
-    return res.send("Proszę podać login i hasło!");
+    return res.render("login.ejs", { error: "Proszę podać login i hasło!" });
   }
 
   const result = await db.query("SELECT * FROM users WHERE login = $1", [
@@ -47,14 +47,14 @@ app.post("/login", async (req, res) => {
   ]);
 
   if (result.rows.length === 0) {
-    return res.send("Nie znaleziono użytkownika!");
+    return res.render("login.ejs", { error: "Nie znaleziono użytkownika!" });
   }
 
   const user = result.rows[0];
 
   const match = await bcrypt.compare(password, user.password);
   if (!match) {
-    return res.send("Nieprawidłowe hasło");
+    return res.render("login.ejs", { error: "Nieprawidłowe hasło!" });
   }
 
   req.session.userId = user.id;
@@ -66,13 +66,20 @@ app.post("/login", async (req, res) => {
 
 // Strona rejestracji
 app.get("/register", (req, res) => {
-  res.render("register.ejs");
+  res.render("register.ejs", { error: null });
 });
 
 // Obsługa rejestracji użytkownika
 app.post("/register", async (req, res) => {
   const { name, surname, login, password } = req.body;
 
+  // Sprawczenie czy login już istnieje
+  const existingUser = await db.query("SELECT * FROM users WHERE login = $1", [
+    login,
+  ]);
+  if (existingUser.rows.length > 0) {
+    return res.render("register.ejs", { error: "Ten login jest już zajęty!" });
+  }
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
@@ -83,7 +90,9 @@ app.post("/register", async (req, res) => {
     res.redirect("/");
   } catch (err) {
     console.log(err);
-    res.send("Błąd rejestracji - login jest już zajęty");
+    res.render("register.ejs", {
+      error: "Błąd rejestracji. Spróbuj ponownie.",
+    });
   }
 });
 
@@ -103,5 +112,5 @@ app.get("/logout", (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server running on port ${port}!`);
+  console.log(`Server running on http://localhost:${port}`);
 });
